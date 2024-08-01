@@ -34,4 +34,10 @@ public class Users {
     private String email;
 
     private String phone;
+
+    private String job;
+
+    private String interest;
+
+    private String purpose;
 }

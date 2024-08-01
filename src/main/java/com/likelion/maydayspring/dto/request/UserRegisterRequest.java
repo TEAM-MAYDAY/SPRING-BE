@@ -17,7 +17,14 @@ public record UserRegisterRequest(
     @Schema(description = "이메일", example = "abc1234@naver.com")
     String email,
     @Schema(description = "전화번호", example = "010-0000-0000")
-    String phone
+    String phone,
+
+    @Schema(description = "직업", example = "대학생")
+    String job,
+    @Schema(description = "흥미", example = "체험 프로그램,산")
+    String interest,
+    @Schema(description = "목적", example = "기분전환을 위해")
+    String purpose
 ) {
 
 }
