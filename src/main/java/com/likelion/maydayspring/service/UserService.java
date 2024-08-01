@@ -18,7 +18,7 @@ public class UserService {
 
     @Transactional
     public Users register(UserRegisterRequest request) {
-        if (usersRepository.findByname(request.id()).isPresent()) {
+        if (usersRepository.findByid(request.id()).isPresent()) {
             throw new BaseException(ErrorCode.ALREADY_EXIST_ID);
         }
 
@@ -28,6 +28,9 @@ public class UserService {
             .name(request.name())
             .email(request.email())
             .phone(request.phone())
+            .job(request.job())
+            .interest(request.interest())
+            .purpose(request.purpose())
             .build();
 
         return usersRepository.save(user);
