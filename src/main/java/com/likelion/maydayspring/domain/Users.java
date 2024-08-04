@@ -1,5 +1,6 @@
 package com.likelion.maydayspring.domain;
 
+import com.likelion.maydayspring.enums.GenderType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -37,7 +38,7 @@ public class Users {
 
     private String job;
 
-    private String interest;
+    private GenderType gender;
 
     private String purpose;
 }
