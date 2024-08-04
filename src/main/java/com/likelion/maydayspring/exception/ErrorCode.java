@@ -18,8 +18,8 @@ public enum  ErrorCode {
      */
     ALREADY_EXIST_ID(400, "US0001", "이미 존재하는 ID입니다."),
     NOT_FOUND_ID(404, "US0002", "ID를 찾을 수 없습니다. 다시 확인해주세요."),
-    WRONG_PASSWORD(400, "US0003", "잘못된 비밀번호 입니다. 다시 확인해주세요.");
-
+    WRONG_PASSWORD(400, "US0003", "잘못된 비밀번호 입니다. 다시 확인해주세요."),
+    NOT_FOUND_GENDER_TYPE(404, "US0004", "해당 성별 타입을 찾을 수 없습니다.");
 
     private final int status;
     private final String code;

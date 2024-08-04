@@ -3,6 +3,8 @@ package com.likelion.maydayspring.domain;
 import com.likelion.maydayspring.enums.GenderType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -38,6 +40,7 @@ public class Users {
 
     private String job;
 
+    @Enumerated(EnumType.STRING)
     private GenderType gender;
 
     private String purpose;
