@@ -29,7 +29,7 @@ public class UserService {
             .email(request.email())
             .phone(request.phone())
             .job(request.job())
-            .interest(request.interest())
+            .gender(request.gender())
             .purpose(request.purpose())
             .build();
 

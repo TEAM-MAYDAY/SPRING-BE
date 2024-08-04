@@ -1,5 +1,6 @@
 package com.likelion.maydayspring.dto.request;
 
+import com.likelion.maydayspring.enums.GenderType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
@@ -21,8 +22,8 @@ public record UserRegisterRequest(
 
     @Schema(description = "직업", example = "대학생")
     String job,
-    @Schema(description = "흥미", example = "체험 프로그램,산")
-    String interest,
+    @Schema(description = "성별", example = "MALE")
+    GenderType gender,
     @Schema(description = "목적", example = "기분전환을 위해")
     String purpose
 ) {

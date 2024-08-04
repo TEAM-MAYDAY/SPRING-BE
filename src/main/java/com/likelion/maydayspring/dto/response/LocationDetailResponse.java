@@ -1,7 +1,6 @@
 package com.likelion.maydayspring.dto.response;
 
 import com.likelion.maydayspring.domain.Location;
-import com.likelion.maydayspring.enums.OfficeType;
 import lombok.Builder;
 
 @Builder
@@ -16,7 +15,11 @@ public record LocationDetailResponse(
     Boolean conferenceRoom,
     String officeType,
     Boolean parking,
-    Boolean phoneBooth
+    Boolean phoneBooth,
+    String phoneNumber,
+    String operatingTime,
+    String locationIntroduction,
+    String providedDetails
 ) {
     public static LocationDetailResponse of(Location location) {
         return LocationDetailResponse.builder()
@@ -30,6 +33,11 @@ public record LocationDetailResponse(
             .officeType(location.getCategory().getOfficeType().getValue())
             .parking(location.getCategory().isParking())
             .phoneBooth(location.getCategory().isPhoneBooth())
+            .phoneNumber(location.getDescriptionDetail().getPhoneNumber())
+            .operatingTime(location.getDescriptionDetail().getOperatingTime())
+            .locationIntroduction(location.getDescriptionDetail().getLocationIntroduction())
+            .providedDetails(location.getDescriptionDetail().getProvidedDetails())
             .build();
     }
 }
+

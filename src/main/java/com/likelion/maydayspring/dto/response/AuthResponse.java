@@ -10,7 +10,7 @@ public record AuthResponse(
     String email,
     String phone,
     String job,
-    String interest,
+    String gender,
     String purpose
 ) {
     public static AuthResponse of(Users user) {
@@ -20,7 +20,7 @@ public record AuthResponse(
             .email(user.getEmail())
             .phone(user.getPhone())
             .job(user.getJob())
-            .interest(user.getInterest())
+            .gender(user.getGender().getValue())
             .purpose(user.getPurpose())
             .build();
     }
