@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.ErrorResponse;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @ApiResponse(responseCode = "200", description = "OK")
 public interface LocationApi {
     @Operation(summary = "전체 location 정보 반환 API", description = "전체 location 정보를 반환합니다.")
-    @PostMapping("/all")
+    @GetMapping("/all")
     ResponseEntity<ListResponse<LocationResponse>> getAllLocations();
 
 
@@ -40,7 +41,7 @@ public interface LocationApi {
                                     """
             )
         }, schema = @Schema(implementation = ErrorResponse.class)))
-    @PostMapping("/info/{locatinoId}")
+    @GetMapping("/info/{locatinoId}")
     ResponseEntity<LocationDetailResponse> getLocationDetail(
         @PathVariable("locationId")
         @Parameter(description = "location id")
