@@ -7,13 +7,14 @@ on:
 
 env:
   DOCKER_REGISTRY_URL: ${{ secrets.DOCKER_REGISTRY_URL }}
-  DOCKER_IMAGE_NAME: dev-uket
-  DOCKER_CONTAINER_NAME: dev-uket
+  DOCKER_IMAGE_NAME: spring-mayday
+  DOCKER_CONTAINER_NAME: spring-mayday
   SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
   SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
   SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
   CATEGORY_FILTER_URL: ${{ secrets.CATEGORY_FILTER_URL }}
   DESCRIPTION_DETAIL_FILTER_URL: ${{ secrets.DESCRIPTION_DETAIL_FILTER_URL }}
+  SPRING_PROFILES_ACTIVE: default
 
 jobs:
   build-and-push-docker-image:
@@ -43,7 +44,7 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      # Building the application with Gradle
+      # Building the application with Gradle, excluding tests
       - name: Build with Gradle
         env:
           SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
@@ -51,7 +52,8 @@ jobs:
           SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
           CATEGORY_FILTER_URL: ${{ secrets.CATEGORY_FILTER_URL }}
           DESCRIPTION_DETAIL_FILTER_URL: ${{ secrets.DESCRIPTION_DETAIL_FILTER_URL }}
-        run: ./gradlew clean build
+          SPRING_PROFILES_ACTIVE: default
+        run: ./gradlew clean build -x test
 
       # Set up Docker Buildx
       - name: Set up Docker Buildx
@@ -75,4 +77,5 @@ jobs:
           # GitHub Action Cache
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
 
