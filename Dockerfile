@@ -5,7 +5,7 @@ COPY . .
 RUN ./gradlew clean build -x test
 
 # Extract the layers for the optimized image
-RUN java -Djarmode=layertools -Dspring.profiles.active=dev -Duser.timezone=Asia/Seoul -jar build/libs/*.jar extract
+RUN java -Djarmode=layertools -Dspring.profiles.active=default -Duser.timezone=Asia/Seoul -jar build/libs/*.jar extract
 
 # Run stage
 FROM openjdk:21-slim-buster AS runner
