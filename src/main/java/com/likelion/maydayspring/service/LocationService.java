@@ -1,7 +1,5 @@
 package com.likelion.maydayspring.service;
 
-import static com.mysql.cj.conf.PropertyKey.logger;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.likelion.maydayspring.domain.Category;
 import com.likelion.maydayspring.domain.DescriptionDetail;
@@ -16,24 +14,18 @@ import com.likelion.maydayspring.properties.FilterProperties;
 import com.likelion.maydayspring.repository.CategoryRepository;
 import com.likelion.maydayspring.repository.DescriptionDetailRepository;
 import com.likelion.maydayspring.repository.LocationRepository;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -48,10 +40,6 @@ public class LocationService {
     private final RestTemplate restTemplate;
     private final DescriptionDetailRepository descriptionDetailRepository;
     private final FilterProperties filterProperties;
-    private static final Logger logger = LoggerFactory.getLogger(LocationService.class);
-
-    private static final String CATEGORY_FILTER_URL = "http://ec2-3-36-88-229.ap-northeast-2.compute.amazonaws.com:8000/filter_office";
-    private static final String DESCRIPTION_DETAIL_FILTER_URL = "http://ec2-3-36-88-229.ap-northeast-2.compute.amazonaws.com:8000/description_office";
 
 
     public List<Location> getAllLocations() {
@@ -100,16 +88,12 @@ public class LocationService {
                             updateCategory(location, filterResponses);
                             locationRepository.save(location);
                         }
-                        System.out.println("Categories updated successfully for region: " + region);
                     } else {
-                        System.err.println("Received null response for region: " + region);
                     }
                 } else {
-                    System.err.println("Failed to get response from FastAPI server for region " + region + ": " + responseEntity.getStatusCode());
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                System.err.println("Error occurred while processing region: " + region);
             }
         }
 
