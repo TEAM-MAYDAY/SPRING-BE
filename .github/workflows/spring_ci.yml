@@ -9,6 +9,9 @@ env:
   DOCKER_REGISTRY_URL: ${{ secrets.DOCKER_REGISTRY_URL }}
   DOCKER_IMAGE_NAME: spring-mayday
   DOCKER_CONTAINER_NAME: spring-mayday
+  DATABASE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
+  DATABASE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
+  DATABASE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
 
 jobs:
   build-and-push-docker-image:
