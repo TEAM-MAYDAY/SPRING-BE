@@ -41,7 +41,7 @@ public interface LocationApi {
                                     """
             )
         }, schema = @Schema(implementation = ErrorResponse.class)))
-    @GetMapping("/info/{locatinoId}")
+    @GetMapping("/info/{locationId}")
     ResponseEntity<LocationDetailResponse> getLocationDetail(
         @PathVariable("locationId")
         @Parameter(description = "location id")

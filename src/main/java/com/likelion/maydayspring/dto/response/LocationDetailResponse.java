@@ -25,6 +25,7 @@ public record LocationDetailResponse(
         return LocationDetailResponse.builder()
             .locationId(location.getLocationId())
             .name(location.getName())
+            .address(location.getAddress())
             .region(location.getRegion())
             .imageUrl(location.getImageUrl())
             .servicePeriod(location.getServicePeriod())

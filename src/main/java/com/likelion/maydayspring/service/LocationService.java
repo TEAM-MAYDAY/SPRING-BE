@@ -2,10 +2,12 @@ package com.likelion.maydayspring.service;
 
 import static com.mysql.cj.conf.PropertyKey.logger;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.likelion.maydayspring.domain.Category;
 import com.likelion.maydayspring.domain.DescriptionDetail;
 import com.likelion.maydayspring.domain.Location;
 import com.likelion.maydayspring.dto.request.OfficeRequest;
+import com.likelion.maydayspring.dto.response.DescriptionDetailResponse;
 import com.likelion.maydayspring.dto.response.FilterResponse;
 import com.likelion.maydayspring.enums.OfficeType;
 import com.likelion.maydayspring.exception.BaseException;
@@ -190,27 +192,23 @@ public class LocationService {
                 requestBody, headers);
 
             try {
-                ResponseEntity<FilterResponse[]> responseEntity = restTemplate.exchange(
+                ResponseEntity<String> responseEntity = restTemplate.exchange(
                     filterProperties.getDescriptionDetailUrl(),
                     HttpMethod.POST,
                     requestEntity,
-                    FilterResponse[].class);
+                    String.class);
 
                 if (responseEntity.getStatusCode() == HttpStatus.OK) {
-                    FilterResponse[] filterResponses = responseEntity.getBody();
-                    if (filterResponses != null) {
-                        for (Location location : regionLocations) {
-                            updateDescriptionDetail(location, filterResponses);
-                            locationRepository.save(location);
-                        }
-                        System.out.println("Categories updated successfully for region: " + region);
-                    } else {
-                        System.err.println("Received null response for region: " + region);
+                    String responseBody = responseEntity.getBody();
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    DescriptionDetailResponse[] detailResponses = objectMapper.readValue(responseBody, DescriptionDetailResponse[].class);
+
+                    for (DescriptionDetailResponse detailResponse : detailResponses) {
+                        updateDescriptionDetail(detailResponse);
                     }
+                    System.out.println("Categories updated successfully for region: " + region);
                 } else {
-                    System.err.println(
-                        "Failed to get response from FastAPI server for region " + region + ": "
-                            + responseEntity.getStatusCode());
+                    System.err.println("Failed to get response from FastAPI server for region " + region + ": " + responseEntity.getStatusCode());
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -219,45 +217,85 @@ public class LocationService {
         }
     }
 
-    private void updateDescriptionDetail(Location location, FilterResponse[] filterResponses) {
-        DescriptionDetail descriptionDetail = location.getDescriptionDetail();
-        if (descriptionDetail == null) {
-            descriptionDetail = new DescriptionDetail();
-            location.setDescriptionDetail(descriptionDetail);
-        }
+    @Transactional
+    public void saveDescriptionDetailsEach(Long locationId) {
+        Location location = locationRepository.findById(locationId)
+            .orElseThrow(() -> new IllegalArgumentException("Location not found for id: " + locationId));
 
-        for (FilterResponse filterResponse : filterResponses) {
-            switch (filterResponse.filter()) {
-                case "PhoneNumber":
-                    descriptionDetail.setPhoneNumber(getStringStatus(filterResponse, location.getName()));
-                    break;
-                case "OperatingTime":
-                    descriptionDetail.setOperatingTime(getStringStatus(filterResponse, location.getName()));
-                    break;
-                case "LocationIntroduction":
-                    descriptionDetail.setLocationIntroduction(getStringStatus(filterResponse, location.getName()));
-                    break;
-                case "ProvidedDetails":
-                    descriptionDetail.setProvidedDetails(getStringStatus(filterResponse, location.getName()));
-                    break;
-                default:
-                    throw new IllegalArgumentException("Unknown filter: " + filterResponse.filter());
+        OfficeRequest officeRequest = new OfficeRequest(location.getName(), location.getDescription());
+
+        Map<String, List<OfficeRequest>> requestBody = new HashMap<>();
+        requestBody.put("offices", List.of(officeRequest));
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<Map<String, List<OfficeRequest>>> requestEntity = new HttpEntity<>(requestBody, headers);
+
+        try {
+            ResponseEntity<String> responseEntity = restTemplate.exchange(
+                filterProperties.getDescriptionDetailUrl(),
+                HttpMethod.POST,
+                requestEntity,
+                String.class);
+
+            if (responseEntity.getStatusCode() == HttpStatus.OK) {
+                String responseBody = responseEntity.getBody();
+                ObjectMapper objectMapper = new ObjectMapper();
+                DescriptionDetailResponse[] detailResponses = objectMapper.readValue(responseBody, DescriptionDetailResponse[].class);
+
+                for (DescriptionDetailResponse detailResponse : detailResponses) {
+                    updateDescriptionDetailEach(location, detailResponse);
+                }
+                System.out.println("Description details updated successfully for location: " + location.getName());
+            } else {
+                System.err.println("Failed to get response from FastAPI server for location " + location.getName() + ": " + responseEntity.getStatusCode());
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Error occurred while processing location: " + location.getName());
         }
+    }
 
-        if (descriptionDetail.getPhoneNumber() == null) {
-            descriptionDetail.setPhoneNumber("확인요망");
+    private void updateDescriptionDetailEach(Location location, DescriptionDetailResponse detailResponse) {
+        if (location != null) {
+            DescriptionDetail descriptionDetail = location.getDescriptionDetail();
+            if (descriptionDetail == null) {
+                descriptionDetail = new DescriptionDetail();
+                location.setDescriptionDetail(descriptionDetail);
+            }
+
+            descriptionDetail.setPhoneNumber(detailResponse.getPhoneNumber() != null ? detailResponse.getPhoneNumber() : "확인요망");
+            descriptionDetail.setOperatingTime(detailResponse.getOperatingTime() != null ? detailResponse.getOperatingTime() : "확인요망");
+            descriptionDetail.setLocationIntroduction(detailResponse.getLocationIntroduction() != null ? detailResponse.getLocationIntroduction() : "확인요망");
+            descriptionDetail.setProvidedDetails(String.join(", ", detailResponse.getProvidedDetails()));
+
+            descriptionDetailRepository.save(descriptionDetail);
+            locationRepository.save(location);
+        } else {
+            System.err.println("Location not found for name: " + detailResponse.getName());
         }
-        if (descriptionDetail.getOperatingTime() == null) {
-            descriptionDetail.setOperatingTime("확인요망");
+    }
+
+    private void updateDescriptionDetail(DescriptionDetailResponse detailResponse) {
+        Location location = locationRepository.findByName(detailResponse.getName()).get();
+        if (location != null) {
+            DescriptionDetail descriptionDetail = location.getDescriptionDetail();
+            if (descriptionDetail == null) {
+                descriptionDetail = new DescriptionDetail();
+                location.setDescriptionDetail(descriptionDetail);
+            }
+
+            descriptionDetail.setPhoneNumber(detailResponse.getPhoneNumber() != null ? detailResponse.getPhoneNumber() : "확인요망");
+            descriptionDetail.setOperatingTime(detailResponse.getOperatingTime() != null ? detailResponse.getOperatingTime() : "확인요망");
+            descriptionDetail.setLocationIntroduction(detailResponse.getLocationIntroduction() != null ? detailResponse.getLocationIntroduction() : "확인요망");
+            descriptionDetail.setProvidedDetails(String.join(", ", detailResponse.getProvidedDetails()));
+
+            descriptionDetailRepository.save(descriptionDetail);
+            locationRepository.save(location);
+        } else {
+            System.err.println("Location not found for name: " + detailResponse.getName());
         }
-        if (descriptionDetail.getLocationIntroduction() == null) {
-            descriptionDetail.setLocationIntroduction("확인요망");
-        }
-        if (descriptionDetail.getProvidedDetails() == null) {
-            descriptionDetail.setProvidedDetails("확인요망");
-        }
-        descriptionDetailRepository.save(descriptionDetail);
     }
 
     private String getStringStatus(FilterResponse filterResponse, String locationName) {
