@@ -43,7 +43,6 @@ public class Location {
 
     private LocalDateTime createdAt;
 
-
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "category_id", referencedColumnName = "categoryId")
     private Category category;
