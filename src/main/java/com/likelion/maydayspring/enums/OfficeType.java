@@ -17,8 +17,23 @@ public enum OfficeType {
         for (OfficeType type : OfficeType.values()) {
             if (type.getValue().equals(officeType)) {
                 return type;
+            } else {
+                return OfficeType.UNCLASSIFIED;
             }
         }
         throw new BaseException(ErrorCode.NOT_FOUND_OFFICE_TYPE);
+    }
+
+    public static OfficeType fromValue(String value) {
+        switch (value.toLowerCase()) {
+            case "cafe":
+                return CAFE;
+            case "shared":
+                return SHARED;
+            case "N/A":
+                return UNCLASSIFIED;
+            default:
+                throw new BaseException(ErrorCode.NOT_FOUND_OFFICE_TYPE);
+        }
     }
 }

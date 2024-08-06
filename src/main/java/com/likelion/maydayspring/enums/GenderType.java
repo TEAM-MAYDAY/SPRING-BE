@@ -19,6 +19,6 @@ public enum GenderType {
                 return type;
             }
         }
-        throw new BaseException(ErrorCode.NOT_FOUND_OFFICE_TYPE);
+        throw new BaseException(ErrorCode.NOT_FOUND_GENDER_TYPE);
     }
 }

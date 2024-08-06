@@ -35,4 +35,6 @@ public class LocationController implements LocationApi {
         LocationDetailResponse response = LocationDetailResponse.of(location);
         return ResponseEntity.ok(response);
     }
+
+
 }

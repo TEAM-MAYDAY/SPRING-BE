@@ -68,8 +68,6 @@ public class CrawledDataService {
 
     public void crawlGangwonData() throws IOException {
         String gangwonUrl = "https://worcation.co.kr/gw";
-        //세부 url 설정해야함
-
         checkSsl();
         Connection con = Jsoup.connect(gangwonUrl);
         Document doc = con.get();
@@ -77,8 +75,6 @@ public class CrawledDataService {
 
     public void crawlBusanData() throws IOException {
         String busanUrl = "https://www.busaness.com/tourist_spot";
-        //세부 url 설정 필요
-
         checkSsl();
         Connection con = Jsoup.connect(busanUrl);
         Document doc = con.get();
@@ -86,7 +82,6 @@ public class CrawledDataService {
 
     public void crawlChungnamData() throws IOException {
         String chungnamUrl = "https://www.cacf.or.kr/site/program/index.php";
-        //메인 페이지
         checkSsl();
         Connection con = Jsoup.connect(chungnamUrl);
         Document doc = con.get();
@@ -94,9 +89,7 @@ public class CrawledDataService {
 
     public void crawlJejuData() throws IOException {
         String privateJejuUrl = "https://jejuworkation.or.kr/Supportproject";
-        //민간
         String publicJejuUrl = "https://jejuworkation.or.kr/islandworklabjeju";
-        //공공
         checkSsl();
         Connection con = Jsoup.connect(privateJejuUrl);
         Document doc = con.get();
